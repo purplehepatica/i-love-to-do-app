@@ -20,6 +20,7 @@ def increase_max_project_id():
     global max_project_id
     max_project_id += 1
 
+
 # screens.py (?)
 
 columns, lines = os.get_terminal_size()
