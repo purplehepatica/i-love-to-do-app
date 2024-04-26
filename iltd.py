@@ -1,30 +1,14 @@
 import os
 
-columns, lines = os.get_terminal_size()
-seen_lines = lines - 3
-
-def start_full_screen_print():
-
-    print(columns * '=')
-
-    for line in range(seen_lines):
-    
-        if line == 0 or line == seen_lines - 1:
-            print(f"= {(columns - 4) * ' '} =")
-        else:
-            print(f"=   {(columns - 8) * ' '}   =")
-
-    print(columns * '=')
-
-
 def initApp():
-    start_full_screen_print()
+    start_screen()
 
 initApp()
 
 
-projects = {}
+# data.py (?)
 
+projects = {}
 
 max_project_id = 0
 
@@ -36,7 +20,27 @@ def increase_max_project_id():
     global max_project_id
     max_project_id += 1
 
+# screens.py (?)
 
+columns, lines = os.get_terminal_size()
+visible_lines = lines - 3
+
+
+def start_screen():
+
+    print(columns * '=')
+
+    for line in range(visible_lines):
+    
+        if line == 0 or line == visible_lines - 1:
+            print(f"= {(columns - 4) * ' '} =")
+        else:
+            print(f"=   {(columns - 8) * ' '}   =")
+
+    print(columns * '=')
+
+
+# project.py
 
 def init_project_creation():
     project_name = get_project_name()
@@ -63,6 +67,7 @@ def create_project(project_id, project_entry):
     projects[project_id] = project_entry
 
 
+# inputs.py / user_choice.py (?)
 
 def user_choice():
     choice = ""
