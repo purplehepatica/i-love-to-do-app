@@ -41,7 +41,6 @@ def display_screen():
     print(columns * '=')
 
 
-
 def refresh_screen():
     display_screen()
 
