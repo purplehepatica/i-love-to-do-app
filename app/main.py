@@ -79,6 +79,7 @@ def user_choice():
     while True:
         while choice != "p" and choice != "w":
             choice = input("Co chcesz wykonać (p - nowy projekt, w - wyjście)?: ")
+            refresh_screen()
 
         if choice == "p":
             init_project_creation()
