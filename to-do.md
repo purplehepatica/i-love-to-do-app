@@ -4,11 +4,15 @@
 
 - Dodanie obsługi zapisu projektów do pliku JSON.
 
-## Dalsze (niewiadome):
+## Dalsze:
 
 - odświeżenie ekranu po naciśnięiu przez użytkownika na dany projekt:
   A. Listenery Python w terminalu?
   B. Projekty jako link (<a>?)
+- zmiana nazwy projektu
+- zmiana pozycji projektu
+- bardzo prosta instalacja aplikacji na komputerze, by była dostępna jako komenda
+- podział kodu na pomniejsze pliki i oczyszczenie kodu
 
 ## Wykonane:
 - ~~Dodanie funkcji listującej projekty na ekranie użytkownika~~,
