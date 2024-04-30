@@ -1,5 +1,9 @@
 # Rzeczy do zrobienia
 
+## Aktualne
+
+- Przemiana funkcjonalności na podejście obiektowe
+
 ## Następne
 
 - Dodanie obsługi zapisu projektów do pliku JSON.
