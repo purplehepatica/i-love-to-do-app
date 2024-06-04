@@ -1,7 +1,7 @@
 from features.screen import Screen
 from features.project import get_project_names, init_project_creation
 from features.inputs import get_user_choice
-from data.data import get_data
+from data.data import get_data, save_data
 
 
 def main():
@@ -20,6 +20,8 @@ def main():
                 init_project_creation(data)
             case "w":
                 quit()
+            case "z":
+                save_data(data_path, data)
             case _:
                 pass
 
