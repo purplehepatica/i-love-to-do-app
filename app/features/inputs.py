@@ -1,2 +1,3 @@
 def get_user_choice():
-    return input("Co chcesz wykonać (p - dodaj projekt, u - usuń projekt, w - wyjście, z - zapisanie danych)?: ")
+    text = "Co chcesz wykonać (p - dodaj projekt, u - usuń projekt, z - zapisz dane, w - wyjdź)?: "
+    return input(text)
