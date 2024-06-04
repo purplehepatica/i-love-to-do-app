@@ -1,5 +1,5 @@
 from features.screen import Screen
-from features.project import get_project_names, init_project_creation
+from features.project import get_project_names, init_project_creation, init_project_removal
 from features.inputs import get_user_choice
 from data.data import get_data, save_data
 
@@ -18,6 +18,8 @@ def main():
                 # by może nie bazować na takich niejawnych formach data,
                 # a raczej: load_data (from json) i save_data (to json)
                 init_project_creation(data)
+            case "u":
+                init_project_removal(data)
             case "w":
                 quit()
             case "z":
