@@ -1,4 +1,4 @@
-from features.screen import Screen
+from features.screen_buffer import ScreenBuffer
 from features.project import get_project_names, init_project_creation, init_project_removal
 from features.inputs import get_user_choice
 from data.data import get_data, save_data
@@ -7,7 +7,7 @@ from data.data import get_data, save_data
 def main():
     data_path = "data/data.json"
     data = get_data(data_path)
-    screen = Screen()
+    screen = ScreenBuffer()
 
     while True:
         screen.display(get_project_names(data))

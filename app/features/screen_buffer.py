@@ -1,7 +1,7 @@
 import os
 
 
-class Screen:
+class ScreenBuffer:
     @property
     def columns(self) -> int:
         return os.get_terminal_size().columns
@@ -11,6 +11,8 @@ class Screen:
         return os.get_terminal_size().lines - 1
 
     def display(self, content: list[str]) -> None:
+        os.system('clear')
+
         content_length = len(content)
 
         first_line = 0
