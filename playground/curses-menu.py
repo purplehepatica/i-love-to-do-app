@@ -28,8 +28,10 @@ def main(stdscr: "curses.window") -> None:
 
         if c == curses.KEY_UP and choice > 0:
             choice -= 1
+            stdscr.refresh()
         elif c == curses.KEY_DOWN and choice < 2:
             choice += 1
+            stdscr.refresh()
 
         if c in [curses.KEY_ENTER, 10, 13] :
 
@@ -40,10 +42,7 @@ def main(stdscr: "curses.window") -> None:
                 case 1:
                     pass
                 case 2:
-                    pass
-
-        stdscr.refresh()
-
+                    break
 
 
 if __name__ == "__main__":
