@@ -11,6 +11,8 @@ from curses.textpad import Textbox, rectangle
 - get_user_choice()
 
 - refresh_element() / refresh_screen()
+
+Strona główna aplikacji wyświetlająca projekty, na których można operować strzałkami góra/dół i wybierać (wchodzić w projekty), a do tego menu na dole ekranu po którym można poruszać się strzałkami lewo-prawo
 """
 
 def get_input_modal(stdscr: "curses.window"):
