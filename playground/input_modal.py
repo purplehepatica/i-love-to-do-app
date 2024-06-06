@@ -1,52 +1,37 @@
-import curses
-from curses.textpad import Textbox, rectangle
+import os
+from pynput import keyboard
 
 
-def display_input_dialog(stdscr: "curses.window"):
-    mid_line = round(curses.LINES / 2)
-    mid_col = round(curses.COLS / 2)
-
-    editwin_lines = 4
-    editwin_columns = round(curses.COLS / 3)
-
-    editwin_start_y = mid_line - round(editwin_lines / 2)
-    editwin_start_x = mid_col - round(editwin_columns / 2)
-
-    editwin_end_y = mid_line + round(editwin_lines / 2)
-    editwin_end_x = mid_col + round(editwin_columns / 2)
-
-    editwin = curses.newwin(
-        editwin_lines, editwin_columns, editwin_start_y, editwin_start_x
-    )
-
-    rectangle(stdscr, editwin_start_y - 1, editwin_start_x - 1, editwin_end_y, editwin_end_x + 1)
-
-    box = Textbox(editwin)
-    box.edit()
-
-    message = box.gather()
-
-    stdscr.clear()
-
-    stdscr.addstr(1, 1, message)
-    stdscr.getch()
+def clear_screen():
+    os.system("clear")
 
 
-def main(stdscr: "curses.window") -> None:
+def get_input_modal():
+    columns, lines = os.get_terminal_size()
+
+    mid_col = round(columns / 2)
+    mid_line = round(lines / 2)
+
+    for line in range(lines):
+        if line == mid_line - 3:
+            print("\033[4mhello\033[0m")
+        if line == mid_line - 2:
+            print("Wpisz nazwę projektu:".center(columns))
+        elif line == mid_line:
+            message = input("> ")
+        else:
+            print("")
+
+
+def main():
     while True:
-        stdscr.addstr(f"Dokonaj wyboru (i - wprowadź tekst, q - wyjdź): ".center((curses.COLS - 1)), curses.A_BOLD)
+        clear_screen()
 
-        c = stdscr.getch()
-
-        if c == ord("i"):
-            stdscr.clear()
-            stdscr.refresh()
-            display_input_dialog(stdscr)
-        elif c == ord("q"):
-            break
-
-        stdscr.clear()
+        choice = None
+        choices = ["1. Hello", "2. World", "3. Wyjdź"]
+        #print(" ".join(choices))
+        print(keyboard.read_key())
 
 
 if __name__ == "__main__":
-    curses.wrapper(main)
+    main()
