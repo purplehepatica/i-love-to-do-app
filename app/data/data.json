@@ -1,4 +1,8 @@
 {
+    "state": {
+        "current_choice": 2,
+        "current_project": 2
+    },
     "projects": [
         {
             "name": "Hello 1!"
@@ -8,9 +12,6 @@
         },
         {
             "name": "Hello 3!"
-        },
-        {
-            "name": "Hello 4!"
         }
     ]
 }
