@@ -4,16 +4,10 @@ import curses
 def display_menu(main_window: "curses.window", choice):
     main_window.refresh()
 
-    curses.curs_set(0)
-    main_window.keypad(True)
-    curses.noecho()
-
-    last_line = curses.LINES
-
     menu_lines = 5
     menu_columns = curses.COLS
 
-    menu_start_y = last_line - menu_lines
+    menu_start_y = curses.LINES - menu_lines
     menu_start_x = 0
 
     menu_window = curses.newwin(
@@ -34,10 +28,8 @@ def display_menu(main_window: "curses.window", choice):
     menu_window.addstr(3, 1, "")
 
     for i, menu_choice in enumerate(menu_choices):
-        if i == choice:
-            menu_window.addstr(f"{menu_choice}   ", curses.A_REVERSE)
-        else:
-            menu_window.addstr(f"{menu_choice}   ")
+        attribute = curses.A_REVERSE if i == choice else curses.A_NORMAL
+
+        menu_window.addstr(f"{menu_choice}   ", attribute)
 
     menu_window.refresh()
-    main_window.refresh()

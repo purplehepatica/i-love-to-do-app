@@ -1,30 +1,30 @@
 # Rzeczy do zrobienia
 
+## Curses
+
+- show_modal()
+- get_user_choice()
+- refresh_element() / refresh_screen()
+- Strona główna aplikacji wyświetlająca projekty, na których można operować strzałkami góra/dół i wybierać (wchodzić w projekty), a do tego menu na dole ekranu po którym można poruszać się strzałkami lewo-prawo
+- w modalu przyciski OK i Anuluj
+- wyświetlanie projektów w ładnym oknie z ramką
+- funkcjonalność przeklikiwania między menu a projektami: menu to strzałki lewa i prawa, z do przełączania widoku, a strzałki górna i dolna do przechodzenia między projektami (wówczas enter oznacza wejście do projektu)
+- refresh on terminal resize
+
 ## Aktualne
-- podział kodu na pomniejsze pliki i oczyszczenie kodu
 - zmiana nazwy projektu
 - zmiana pozycji projektu (?)
 
 ## Następne
 
-## Dalsze:
+## Dalsze
 
 - style "CSS"
-- odświeżenie ekranu po naciśnięiu przez użytkownika na dany projekt:
-  A. Listenery Python w terminalu?
-  B. Projekty jako link (<a>?)
 - bardzo prosta instalacja aplikacji na komputerze, by była dostępna jako komenda
-- wyjście z aplikacji, jeśli okno terminala jest za małe,
+- wyjście z aplikacji, jeśli okno terminala jest za małe
 - ograniczenie liczby projektów do wysokości ekranu (?)
-- wprowadzenie max. liczby słów w inpucie, tak by aplikacja zawsze wyglądała jednolicie
 
-## Wykonane:
-- ~~Dodanie funkcji listującej projekty na ekranie użytkownika~~,
-- ~~Dodanie funkcji odświeżającej ekran po dodaniu nowego projektu (po dodaniu czegokolwiek, tak by na dole zawsze była tylko jedna linijka inputu~~,
-- ~~Dodanie obsługi zapisu projektów do pliku JSON~~
-
-
-## Inspiracje:
+## Inspiracje
 - https://snapcraft.io/taskbook
 - https://github.com/xwmx/nb
 - https://github.com/gammons/ultralist

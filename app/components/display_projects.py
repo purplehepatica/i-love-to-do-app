@@ -1,20 +1,28 @@
 import curses
 
 
-# create_projects_window() itp
+class ProjectsWindow:
+    def __init__(self, main_window: "curses.window"):
+        self.main_window = main_window
+
+    def create(self):
+        pass
+
+    def display(self):
+        pass
+
+    def get(self, box):
+        pass
+
+
 def display_projects(main_window: "curses.window", projects, current_project):
+
     main_window.refresh()
-
-    curses.curs_set(0)
-    main_window.keypad(True)
-    curses.noecho()
-
-    first_line = 0
 
     projects_lines = curses.LINES - 5
     projects_columns = curses.COLS
 
-    projects_start_y = first_line
+    projects_start_y = 0
     projects_start_x = 0
 
     projects_window = curses.newwin(
@@ -26,10 +34,8 @@ def display_projects(main_window: "curses.window", projects, current_project):
     projects_window.addstr(2, 1, "--- LISTA PROJEKTÓW ---".center(projects_columns - 2))
 
     for i, project_name in enumerate(projects):
-        if i == current_project:
-            projects_window.addstr(4 + i, 1, f"{i + 1}. {project_name}".center(projects_columns - 2), curses.A_REVERSE)
-        else:
-            projects_window.addstr(4 + i, 1, f"{i + 1}. {project_name}".center(projects_columns - 2))
+        attribute = curses.A_REVERSE if i == current_project else curses.A_NORMAL
+
+        projects_window.addstr(4 + i, 1, f"{i + 1}. {project_name}".center(projects_columns - 2), attribute)
 
     projects_window.refresh()
-    main_window.refresh()

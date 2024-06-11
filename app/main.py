@@ -14,12 +14,12 @@ def main(main_window: "curses.window") -> None:
     data.load()
 
     while True:
-        # curses.start_color()
-        # COLOR_SLATE_BLUE_3 = 61
-        # curses.init_pair(1, curses.COLOR_WHITE, COLOR_SLATE_BLUE_3)
-        # stdscr.bkgd(" ", curses.color_pair(1))
+        main_window.border()
+        curses.curs_set(0)
+        main_window.keypad(True)
+        curses.noecho()
 
-        projects = Projects(data.projects)
+        projects = Projects(data.data["projects"])
 
         # -> state = State(data.state)
 
@@ -30,8 +30,8 @@ def main(main_window: "curses.window") -> None:
         # decrease_menu_choice_position()
         # increase_current_project_position()
         # decrease_current_project_position()
-        current_project = data.state["current_project"]
-        current_choice = data.state["current_choice"]
+        current_project = data.data["state"]["current_project_position"]
+        current_choice = data.data["state"]["current_menu_option"]
 
         projects_names = projects.names
 
@@ -42,20 +42,25 @@ def main(main_window: "curses.window") -> None:
         key = listen_for_key_input(main_window)
 
         if key == curses.KEY_LEFT and current_choice > 0:
-            data.state["current_choice"] -= 1
+            # handle_key_left_press
+            data.data["state"]["current_menu_option"] -= 1
             main_window.refresh()
         elif key == curses.KEY_RIGHT and current_choice < 3:
-            data.state["current_choice"] += 1
+            # handle_key_right_press
+            data.data["state"]["current_menu_option"] += 1
             main_window.refresh()
 
         if key == curses.KEY_UP and current_project > 0:
-            data.state["current_project"] -= 1
+            # handle_key_up_press
+            data.data["state"]["current_project_position"] -= 1
             main_window.refresh()
         elif key == curses.KEY_DOWN and current_project < len(projects_names) - 1:
-            data.state["current_project"] += 1
+            # handle_key_down_press
+            data.data["state"]["current_project_position"] += 1
             main_window.refresh()
 
         if key in [curses.KEY_ENTER, 10, 13]:
+            # handle_enter_key_press
 
             match current_choice:
                 case 0:
