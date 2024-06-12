@@ -4,7 +4,7 @@ import curses
 def display_menu_window(main_window: "curses.window", choice):
     main_window.refresh()
 
-    menu_lines = 5
+    menu_lines = 6
     menu_columns = curses.COLS
 
     menu_start_y = curses.LINES - menu_lines
@@ -19,7 +19,9 @@ def display_menu_window(main_window: "curses.window", choice):
     menu_choices = [
         "1. Dodaj projekt",
         "2. Usuń projekt",
-        "3. Wyjdź"
+        "3. Otwórz projekt",
+        "4. Zmień pozycję",
+        "5. Wyjdź"
     ]
 
     menu_window.addstr(1, 1, "Co chcesz wykonać?: ".center(menu_columns - 2))

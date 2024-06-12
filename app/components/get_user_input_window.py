@@ -16,7 +16,7 @@ class InputModal:
         pass
 
 
-def get_input_modal(main_window: "curses.window"):
+def get_user_input_window(main_window: "curses.window"):
     # main_window.clear()
 
     modal_lines = curses.LINES

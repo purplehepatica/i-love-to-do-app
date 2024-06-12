@@ -1,9 +1,9 @@
 import curses
 
 from features.selections_state import SelectionsState
-from components.get_input_modal import get_input_modal
-from components.display_menu import display_menu_window
-from components.display_projects import display_projects_window
+from components.get_user_input_window import get_user_input_window
+from components.display_menu_window import display_menu_window
+from components.display_projects_window import display_projects_window
 from components.listen_for_key_input import listen_for_key_input
 from data.data import Data
 from features.project import Project
@@ -44,6 +44,7 @@ def main(main_window: "curses.window") -> None:
         curses.noecho()
 
         display_projects_window(main_window, projects.names, selected_positions.selected_project_position)
+
         display_menu_window(main_window, selected_positions.selected_menu_option)
 
         key = listen_for_key_input(main_window)
@@ -51,7 +52,7 @@ def main(main_window: "curses.window") -> None:
         if key == curses.KEY_LEFT and selected_positions.selected_menu_option > 0:
             # handle_key_left_press
             selected_positions.selected_menu_option -= 1
-        elif key == curses.KEY_RIGHT and selected_positions.selected_menu_option < 3:
+        elif key == curses.KEY_RIGHT and selected_positions.selected_menu_option < len(projects.projects):
             # handle_key_right_press
             selected_positions.selected_menu_option += 1
 
@@ -68,7 +69,7 @@ def main(main_window: "curses.window") -> None:
             match selected_positions.selected_menu_option:
                 case 0:
                     main_window.clear()
-                    project_name = get_input_modal(main_window)
+                    project_name = get_user_input_window(main_window)
                     project = Project(project_name)
 
                     projects.add(project)
@@ -83,6 +84,10 @@ def main(main_window: "curses.window") -> None:
 
                     save_data(data_path, selected_positions, projects)
                 case 2:
+                    pass
+                case 3:
+                    pass
+                case 4:
                     quit()
 
 
