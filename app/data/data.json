@@ -1,7 +1,7 @@
 {
     "state": {
-        "current_choice": 2,
-        "current_project": 2
+        "current_menu_option": 2,
+        "current_project_position": 3
     },
     "projects": [
         {
