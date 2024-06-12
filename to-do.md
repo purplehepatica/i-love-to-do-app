@@ -1,5 +1,11 @@
 # Rzeczy do zrobienia
 
+3. Rozkminić funkcjonalność zapisu Projects, Project i SelectionState do Data
+4. zapobiec sytuacji, gdy pliku nie ma lub jest wypełniony innymi danymi
+5. operacje na state, np. increase, decrease
+
+---
+
 ## Curses
 
 - show_modal()

@@ -15,7 +15,7 @@ class ProjectsWindow:
         pass
 
 
-def display_projects(main_window: "curses.window", projects, current_project):
+def display_projects_window(main_window: "curses.window", projects, current_project):
 
     main_window.refresh()
 
