@@ -1,17 +1,18 @@
 {
     "selected_positions": {
-        "selected_menu_option": 1,
-        "selected_project_position": 2
+        "selected_menu_option": 5,
+        "selected_project_position": 0,
+        "selected_project_task_position": 0,
+        "view_type": "project"
     },
     "projects": [
         {
-            "name": "Hello 1!"
-        },
-        {
-            "name": "Hello 2!"
-        },
-        {
-            "name": "Hello 3!"
+            "name": "NOWY PROJEKT !!",
+            "tasks": [
+                {
+                    "name": "zadanie nr 1"
+                }
+            ]
         }
     ]
 }

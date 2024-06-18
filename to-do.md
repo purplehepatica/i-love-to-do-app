@@ -3,6 +3,8 @@
 3. Rozkminić funkcjonalność zapisu Projects, Project i SelectionState do Data
 4. zapobiec sytuacji, gdy pliku nie ma lub jest wypełniony innymi danymi
 5. operacje na state, np. increase, decrease
+6. Może wrzucić tasks osobno i by każde zadanie miało przypisane odgórnie konkretne ID projektu 
+7. jak projekty puste, to aplikacja powinna działać
 
 ---
 
