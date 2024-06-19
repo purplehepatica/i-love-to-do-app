@@ -2,27 +2,7 @@ import curses
 from curses.textpad import rectangle, Textbox
 
 
-class NotMineTextboxWithUtfSupport(Textbox):
-    def __init__(self, win):
-        super().__init__(win)
-
-    def do_command(self, ch):
-        if ch in (curses.KEY_ENTER, 10, 13):
-            return 0
-        elif ch == 7:  # Ctrl-G to zakończenie
-            return 0
-        elif ch >= 256:
-            # Obsługa polskich znaków
-            try:
-                self.win.addstr(chr(ch))
-            except curses.error:
-                pass
-        else:
-            super().do_command(ch)
-        return 1
-
-
-class Input:
+class InputDialog:
     def __init__(self, main_window: "curses.window"):
         mid_line = curses.LINES // 2
         mid_col = curses.COLS // 2
@@ -38,7 +18,7 @@ class Input:
 
         self.window = main_window
         self.input = self.window.subwin(self.height, self.width, self.begin_y, self.begin_x)
-        self.box = NotMineTextboxWithUtfSupport(self.input)  # Textbox(self.input)
+        self.box = Textbox(self.input)
 
     def get(self):
         self.box.edit()

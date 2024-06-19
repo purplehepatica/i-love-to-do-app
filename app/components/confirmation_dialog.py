@@ -1,7 +1,7 @@
 import curses
 
 
-class Modal:
+class ConfirmationDialog:
     def __init__(self, main_window: "curses.window"):
         self.window = main_window
 

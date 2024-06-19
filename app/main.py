@@ -1,17 +1,14 @@
 import curses
 
-from components.modal import Modal
-from components.input import Input
+from helpers.helpers import listen_for_key_input, ProjectActions, ProjectTaskActions
+from components.confirmation_dialog import ConfirmationDialog
+from components.input_dialog import InputDialog
 from components.window import Window
-from features.selections_state import SelectionsState
+from features.ui_state import UIState
 from data.data import Data
 from features.task import Task
 from features.project import Project
 from features.projects import Projects
-
-
-def listen_for_key_input(main_window: "curses.window"):
-    return main_window.getch()
 
 
 def main(main_window: "curses.window"):
@@ -22,23 +19,27 @@ def main(main_window: "curses.window"):
         Project(project["name"], [Task(task["name"]) for task in project["tasks"]]) for project in data["projects"]
     ])
 
-    selected_positions = SelectionsState()
-    selected_positions.selected_project_position = data["selected_positions"]["selected_project_position"]
-    selected_positions.selected_menu_option = data["selected_positions"]["selected_menu_option"]
+    ui_state = UIState.from_dict(data["ui_state"])
 
     while True:
         curses.curs_set(0)
         main_window.keypad(True)
         curses.noecho()
 
-        current_project = projects.projects[selected_positions.selected_project_position] if len(projects.projects) > 0 else None
+        main_window.clear()
+
+        current_project: Project = projects.projects[ui_state.project] \
+            if len(projects.projects) > 0 else None
+
+        current_project_task: Task = current_project.tasks[ui_state.project_task] \
+            if ui_state.view_type == "task" else None
 
         # Windows
         full_width = curses.COLS
         smaller_window_height = 5
 
         projects_header = "Projects list"
-        tasks_header = f"Project '{projects.projects[selected_positions.selected_project_position].name}' Tasks List"
+        tasks_header = f"Project '{projects.projects[ui_state.project].name}' Tasks List"
         menu_header = "What do you want to do?"
         add_project_input_header = "Insert project name"
         add_project_task_input_header = "Insert project task name"
@@ -54,7 +55,7 @@ def main(main_window: "curses.window"):
             5: "Exit"
         }
 
-        project_task_menu_options = {
+        task_menu_options = {
             0: "Add",
             1: "Delete",
             2: "Change name",
@@ -66,39 +67,48 @@ def main(main_window: "curses.window"):
         tasks_window = Window(main_window, curses.LINES - smaller_window_height, full_width, 0, 0)
         projects_menu_window = Window(main_window, smaller_window_height, full_width, curses.LINES - smaller_window_height, 0)
         tasks_menu_window = Window(main_window, smaller_window_height, full_width, curses.LINES - smaller_window_height, 0)
-        input_window = Input(main_window)
-        confirmation_window = Modal(main_window)
+        input_window = InputDialog(main_window)
+        confirmation_window = ConfirmationDialog(main_window)
 
-        if selected_positions.view_type == "project":
+        menu = projects_menu_window if ui_state.view_type == "project" else tasks_menu_window
+
+
+        if ui_state.mode == "editing":
+            curses.start_color()
+            curses.init_pair(1, 8, curses.COLOR_BLACK)
+            menu.sub_window.bkgd(" ", curses.color_pair(1))
+            menu.refresh()
+
+        if ui_state.view_type == "project":
             projects_window.display(
                 projects_header,
                 "column",
                 projects.names,
-                selected_positions.selected_project_position
+                ui_state.project
             )
 
             projects_menu_window.display(
                 menu_header,
                 "row",
                 list(project_menu_options.values()),
-                selected_positions.selected_menu_option
+                ui_state.menu
             )
-        elif selected_positions.view_type == "task":
+        elif ui_state.view_type == "task":
             tasks_window.display(
                 tasks_header,
                 "column",
                 current_project.task_names,
-                selected_positions.selected_project_task_position
+                ui_state.project_task
             )
 
             tasks_menu_window.display(
                 menu_header,
                 "row",
-                list(project_task_menu_options.values()),
-                selected_positions.selected_menu_option
+                list(task_menu_options.values()),
+                ui_state.menu
             )
 
-        # Pressed Keys Management
+        # HANDLE KEY FUNCTIONS START
         def confirmation(func):
             def wrapper(*args, **kwargs):
                 if confirmation_window.display():
@@ -106,14 +116,16 @@ def main(main_window: "curses.window"):
 
             return wrapper
 
-        def open_project():
-            main_window.clear()
-            selected_positions.view_type = "task"
+        def input(func):
+            def wrapper(*args, **kwargs):
+                input_window.display(change_project_task_name_input_header)
+                value = input_window.get()
 
-        def close_project():
-            main_window.clear()
-            selected_positions.view_type = "project"
+                func(value)
 
+            return  wrapper
+
+        #@input
         def add_project():
             input_window.display(add_project_input_header)
             project_name = input_window.get()
@@ -121,60 +133,20 @@ def main(main_window: "curses.window"):
             project = Project(project_name)
 
             projects.add(project)
-            selected_positions.selected_project_position = len(projects.projects) - 1
+            ui_state.project = len(projects.projects) - 1
 
         @confirmation
         def delete_project():
-            projects.delete(selected_positions.selected_project_position)
-            main_window.clear()
+            projects.delete(ui_state.project)
 
-            if selected_positions.selected_project_position != 0:
-                selected_positions.selected_project_position -= 1
+            if ui_state.project != 0:
+                ui_state.project -= 1
 
         def change_project_name():
             input_window.display(change_project_name_input_header)
             new_project_name = input_window.get()
 
-            projects.projects[selected_positions.selected_project_position].name = new_project_name
-
-        def change_project_position():
-            # np. if view_type == "project_position_change"
-            curses.start_color()
-            curses.init_pair(1, 8, curses.COLOR_BLACK)
-            projects_menu_window.sub_window.bkgd(" ", curses.color_pair(1))
-            projects_menu_window.refresh()
-
-            while True:
-                current_project = projects.projects[selected_positions.selected_project_position]
-
-                upper_project = projects.projects[selected_positions.selected_project_position - 1] \
-                    if selected_positions.selected_project_position > 0 else None
-
-                lower_project = projects.projects[selected_positions.selected_project_position + 1] \
-                    if selected_positions.selected_project_position < len(projects.names) - 1 else None
-
-                key = main_window.getch()
-
-                match key:
-                    case curses.KEY_UP:
-                        if upper_project is not None:
-                            projects.projects[selected_positions.selected_project_position] = upper_project
-                            projects.projects[selected_positions.selected_project_position - 1] = current_project
-                            selected_positions.selected_project_position -= 1
-                    case curses.KEY_DOWN:
-                        if lower_project is not None:
-                            projects.projects[selected_positions.selected_project_position] = lower_project
-                            projects.projects[selected_positions.selected_project_position + 1] = current_project
-                            selected_positions.selected_project_position += 1
-                    case curses.KEY_ENTER | 10 | 13:
-                        break
-
-                projects_window.display(
-                    projects_header,
-                    "column",
-                    projects.names,
-                    selected_positions.selected_project_position
-                )
+            projects.projects[ui_state.project].name = new_project_name
 
         def add_project_task():
             input_window.display(add_project_task_input_header)
@@ -183,115 +155,123 @@ def main(main_window: "curses.window"):
             task = Task(project_task_name)
 
             current_project.add_task(task)
-            selected_positions.selected_project_task_position = len(current_project.task_names) - 1
+            ui_state.project_task = len(current_project.task_names) - 1
 
         @confirmation
         def delete_project_task():
-            current_project.delete_task(selected_positions.selected_project_task_position)
-            main_window.clear()
+            current_project.delete_task(ui_state.project_task)
 
-            if selected_positions.selected_project_task_position != 0:
-                selected_positions.selected_project_task_position -= 1
+            if ui_state.project_task != 0:
+                ui_state.project_task -= 1
 
         def change_project_task_name():
             input_window.display(change_project_task_name_input_header)
             new_project_task_name = input_window.get()
 
-            current_project.tasks[selected_positions.selected_project_task_position].name = new_project_task_name
-
-        def change_project_task_position():
-            # np. if view_type == "project_task_position_change" -> lub całkowicie ujednolicić
-            curses.start_color()
-            curses.init_pair(1, 8, curses.COLOR_BLACK)
-            tasks_menu_window.sub_window.bkgd(" ", curses.color_pair(1))
-            tasks_menu_window.refresh()
-
-            while True:
-                current_project_task = current_project.tasks[selected_positions.selected_project_task_position]
-
-                upper_project_task = current_project.tasks[selected_positions.selected_project_task_position - 1] \
-                    if selected_positions.selected_project_task_position > 0 else None
-
-                lower_project_task = current_project.tasks[selected_positions.selected_project_task_position + 1] \
-                    if selected_positions.selected_project_task_position < len(current_project.task_names) - 1 else None
-
-                key = main_window.getch()
-
-                match key:
-                    case curses.KEY_UP:
-                        if upper_project_task is not None:
-                            current_project.tasks[selected_positions.selected_project_task_position] = upper_project_task
-                            current_project.tasks[selected_positions.selected_project_task_position - 1] = current_project_task
-                            selected_positions.selected_project_task_position -= 1
-                    case curses.KEY_DOWN:
-                        if lower_project_task is not None:
-                            current_project.tasks[selected_positions.selected_project_task_position] = lower_project_task
-                            current_project.tasks[selected_positions.selected_project_task_position + 1] = current_project_task
-                            selected_positions.selected_project_task_position += 1
-                    case curses.KEY_ENTER | 10 | 13:
-                        break
-
-                tasks_window.display(
-                    tasks_header,
-                    "column",
-                    current_project.task_names,
-                    selected_positions.selected_project_task_position
-                )
+            current_project.tasks[ui_state.project_task].name = new_project_task_name
 
         @confirmation
         def exit_app():
             quit()
-
-        project_actions = {
-            0: open_project,
-            1: add_project,
-            2: delete_project,
-            3: change_project_name,
-            4: change_project_position,
-            5: exit_app
-        }
-
-        project_task_actions = {
-            0: add_project_task,
-            1: delete_project_task,
-            2: change_project_task_name,
-            3: change_project_task_position,
-            4: close_project,
-        }
+        # HANDLE KEY FUNCTIONS END
 
         pressed_key = listen_for_key_input(main_window)
 
-        # zamiast selected_positions.selected_project_position to np. current_item
+        # zamiast ui_state.selected_project_position to np. current_item
         # zamiast current_project.task_names to np. current_item_tasks
         # ITP! ujednolicając przy uruchomieniu while obecny projekt i obecne zadanie
-        if selected_positions.view_type == "project":
-            match pressed_key:
-                case curses.KEY_LEFT if selected_positions.selected_menu_option > 0:
-                    selected_positions.selected_menu_option -= 1
-                case curses.KEY_RIGHT if selected_positions.selected_menu_option < len(list(project_menu_options.values())) - 1:
-                    selected_positions.selected_menu_option += 1
-                case curses.KEY_UP if selected_positions.selected_project_position > 0:
-                    selected_positions.selected_project_position -= 1
-                case curses.KEY_DOWN if selected_positions.selected_project_position < len(projects.names) - 1:
-                    selected_positions.selected_project_position += 1
-                case curses.KEY_ENTER | 10 | 13:  # enter_key numbers in various systems
-                    action = project_actions[selected_positions.selected_menu_option]
-                    action()
-        elif selected_positions.view_type == "task":
-            match pressed_key:
-                case curses.KEY_LEFT if selected_positions.selected_menu_option > 0:
-                    selected_positions.selected_menu_option -= 1
-                case curses.KEY_RIGHT if selected_positions.selected_menu_option < len(list(project_task_menu_options.values())) - 1:
-                    selected_positions.selected_menu_option += 1
-                case curses.KEY_UP if selected_positions.selected_project_task_position > 0:
-                    selected_positions.selected_project_task_position -= 1
-                case curses.KEY_DOWN if selected_positions.selected_project_task_position < len(current_project.task_names) - 1:
-                    selected_positions.selected_project_task_position += 1
-                case curses.KEY_ENTER | 10 | 13:  # enter_key numbers in various systems
-                    action = project_task_actions[selected_positions.selected_menu_option]
-                    action()
+        if ui_state.mode == "editing" and ui_state.view_type == "project" and current_project is not None:
+            upper_project = projects.projects[ui_state.project - 1] \
+                if ui_state.project > 0 else None
 
-        new_data = selected_positions.serialize() | projects.serialize()
+            lower_project = projects.projects[ui_state.project + 1] \
+                if ui_state.project < len(projects.names) - 1 else None
+
+            match pressed_key:
+                case curses.KEY_UP:
+                    if upper_project is not None:
+                        projects.projects[ui_state.project] = upper_project
+                        projects.projects[ui_state.project - 1] = current_project
+                        ui_state.project -= 1
+                case curses.KEY_DOWN:
+                    if lower_project is not None:
+                        projects.projects[ui_state.project] = lower_project
+                        projects.projects[ui_state.project + 1] = current_project
+                        ui_state.project += 1
+                case curses.KEY_ENTER | 10 | 13:
+                    ui_state.mode = "normal"
+        elif (ui_state.mode == "editing"
+                and ui_state.view_type == "task"
+                and current_project_task is not None):
+            upper_project_task = current_project.tasks[ui_state.project_task - 1] \
+                if ui_state.project_task > 0 else None
+
+            lower_project_task = current_project.tasks[ui_state.project_task + 1] \
+                if ui_state.project_task < len(current_project.task_names) - 1 else None
+
+            match pressed_key:
+                case curses.KEY_UP:
+                    if upper_project_task is not None:
+                        current_project.tasks[ui_state.project_task] = upper_project_task
+                        current_project.tasks[ui_state.project_task - 1] = current_project_task
+                        ui_state.project_task -= 1
+                case curses.KEY_DOWN:
+                    if lower_project_task is not None:
+                        current_project.tasks[ui_state.project_task] = lower_project_task
+                        current_project.tasks[ui_state.project_task + 1] = current_project_task
+                        ui_state.project_task += 1
+                case curses.KEY_ENTER | 10 | 13:
+                    ui_state.mode = "normal"
+        elif ui_state.mode == "normal" and ui_state.view_type == "project":
+            match pressed_key:
+                case curses.KEY_LEFT if ui_state.menu > 0:
+                    ui_state.menu -= 1
+                case curses.KEY_RIGHT if ui_state.menu < len(list(project_menu_options.values())) - 1:
+                    ui_state.menu += 1
+                case curses.KEY_UP if ui_state.project > 0:
+                    ui_state.project -= 1
+                case curses.KEY_DOWN if ui_state.project < len(projects.names) - 1:
+                    ui_state.project += 1
+                case curses.KEY_ENTER | 10 | 13:  # enter_key numbers in various systems
+                    match ProjectActions(ui_state.menu):
+                        case ProjectActions.OPEN:
+                            ui_state.view_type = "task"
+                        case ProjectActions.ADD:
+                            add_project()
+                        case ProjectActions.DELETE:
+                            delete_project()
+                        case ProjectActions.CHANGE_NAME:
+                            change_project_name()
+                        case ProjectActions.CHANGE_POSITION:
+                            ui_state.mode = "editing"
+                        case ProjectActions.EXIT:
+                            exit_app()
+        elif ui_state.mode == "normal" and ui_state.view_type == "task":
+            match pressed_key:
+                case curses.KEY_LEFT if ui_state.menu > 0:
+                    # previous_menu_option
+                    ui_state.menu -= 1
+                case curses.KEY_RIGHT if ui_state.menu < len(list(task_menu_options.values())) - 1:
+                    # next_menu_option
+                    ui_state.menu += 1
+                case curses.KEY_UP if ui_state.project_task > 0:
+                    ui_state.project_task -= 1
+                case curses.KEY_DOWN if ui_state.project_task < len(current_project.task_names) - 1:
+                    ui_state.project_task += 1
+                case curses.KEY_ENTER | 10 | 13:  # enter_key numbers in various systems
+                    match ProjectTaskActions(ui_state.menu):
+                        case ProjectTaskActions.ADD:
+                            add_project_task()
+                        case ProjectTaskActions.DELETE:
+                            delete_project_task()
+                        case ProjectTaskActions.CHANGE_NAME:
+                            change_project_task_name()
+                        case ProjectTaskActions.CHANGE_POSITION:
+                            ui_state.mode = "editing"
+                        case ProjectTaskActions.CLOSE:
+                            ui_state.view_type = "project"
+
+        new_data = ui_state.serialize() | projects.serialize()
         Data.save(data_path, new_data)
 
 

@@ -12,6 +12,10 @@ class Projects:
     def delete(self, project_index):
         self.projects.pop(project_index)
 
+    @classmethod
+    def from_dict(cls, data):
+        return cls()
+
     def serialize(self):
         return {
             "projects": [project.serialize() for project in self.projects]
