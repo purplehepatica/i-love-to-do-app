@@ -154,6 +154,7 @@ def main(main_window: "curses.window"):
                 case curses.KEY_ENTER | 10 | 13:
                     # change mode to normal
                     ui_state.mode = "normal"
+                    continue
         elif ui_state.mode == "normal":
             match pressed_key:
                 case curses.KEY_LEFT if ui_state.menu_position > 0:

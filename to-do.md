@@ -1,3 +1,7 @@
+# Błędy
+
+- zmiana pozycji tasków i wyjście z widoku "task" sprawia, że current_project nadpisuje się wartością, która nie istnieje
+
 # Rzeczy do zrobienia
 
 - zapobiec sytuacji, gdy pliku nie ma lub jest wypełniony innymi danymi

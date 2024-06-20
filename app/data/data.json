@@ -1,9 +1,9 @@
 {
     "ui_state": {
-        "menu_position": 0,
-        "project_position": 0,
-        "project_task_position": 1,
-        "view_type": "task",
+        "menu_position": 4,
+        "project_position": 4,
+        "project_task_position": 69,
+        "view_type": "project",
         "mode": "normal"
     },
     "projects": [
@@ -11,13 +11,19 @@
             "name": "new project",
             "tasks": [
                 {
-                    "name": "task 1"
-                },
-                {
                     "name": "task 2"
                 },
                 {
                     "name": "task 3"
+                },
+                {
+                    "name": "task 4"
+                },
+                {
+                    "name": "task 5"
+                },
+                {
+                    "name": "task 1"
                 }
             ]
         }

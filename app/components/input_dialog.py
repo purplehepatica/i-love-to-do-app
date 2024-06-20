@@ -25,7 +25,6 @@ class InputDialog:
         self.input = self.window.subwin(self.height, self.width, self.begin_y, self.begin_x)
         self.box = Textbox(self.input)
 
-
     @property
     def free_width(self):
         return curses.COLS - 2
@@ -40,6 +39,7 @@ class InputDialog:
         return message.strip()
 
     def display(self, header):
+        self.input.clear()
         self.window.clear()
         self.window.border()
 
