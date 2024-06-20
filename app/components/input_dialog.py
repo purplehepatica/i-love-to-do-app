@@ -3,15 +3,20 @@ from curses.textpad import rectangle, Textbox
 
 
 class InputDialog:
-    def __init__(self, main_window: "curses.window"):
-        mid_line = curses.LINES // 2
-        mid_col = curses.COLS // 2
+    @property
+    def mid_line(self):
+        return curses.LINES // 2
 
+    @property
+    def mid_column(self):
+        return curses.COLS // 2
+
+    def __init__(self, main_window: "curses.window"):
         self.height = 1
         self.width = curses.COLS // 3
 
-        self.begin_y = mid_line - (self.height // 2)
-        self.begin_x = mid_col - (self.width // 2)
+        self.begin_y = self.mid_line - (self.height // 2)
+        self.begin_x = self.mid_column - (self.width // 2)
 
         self.end_y = self.begin_y + self.height
         self.end_x = self.begin_x + self.width
@@ -19,6 +24,11 @@ class InputDialog:
         self.window = main_window
         self.input = self.window.subwin(self.height, self.width, self.begin_y, self.begin_x)
         self.box = Textbox(self.input)
+
+
+    @property
+    def free_width(self):
+        return curses.COLS - 2
 
     def get(self):
         self.box.edit()
@@ -33,8 +43,8 @@ class InputDialog:
         self.window.clear()
         self.window.border()
 
-        self.window.addstr((curses.LINES // 2) - 3, 1, f"--- {header} --- [ ENTER ]".center(curses.COLS - 2).upper(), curses.A_BOLD)
-        self.window.addstr((curses.LINES // 2) - 2, 1, "")
+        self.window.addstr(self.mid_line - 3, 1, f"--- {header} --- [ ENTER ]".center(self.free_width).upper(), curses.A_BOLD)
+        self.window.addstr(self.mid_line - 2, 1, "")
 
         rectangle(
             self.window,

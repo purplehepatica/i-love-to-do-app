@@ -20,3 +20,13 @@ class ProjectTaskActions(Enum):
 
 def listen_for_key_input(main_window: "curses.window"):
     return main_window.getch()
+
+
+def confirmation(confirmation_window):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            if confirmation_window.display():
+                func(*args, **kwargs)
+
+        return wrapper
+    return decorator

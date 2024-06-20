@@ -2,6 +2,19 @@ import curses
 
 
 class Window:
+    def __init__(self, main_window, min_lines, min_width, position):
+        pass
+
+    @property
+    def height(self):
+        return curses.LINES
+
+    @property
+    def width(self):
+        return curses.COLS
+
+
+class WindowX:
     def __init__(self, main_window, height, width, begin_y, begin_x):
         self.height = height
         self.width = width

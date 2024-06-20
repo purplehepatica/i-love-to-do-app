@@ -5,19 +5,27 @@ class ConfirmationDialog:
     def __init__(self, main_window: "curses.window"):
         self.window = main_window
 
+    @property
+    def mid_line(self):
+        return curses.LINES // 2
+
+    @property
+    def free_width(self):
+        return curses.COLS - 2
+
     def display(self):
         self.window.clear()
 
         self.window.border()
 
-        self.window.addstr((curses.LINES // 2) - 3, 1, "--- Czy jesteś pewien? ---".center(curses.COLS - 2).upper())
+        self.window.addstr(self.mid_line - 3, 1, "--- Czy jesteś pewien? ---".center(self.free_width).upper())
 
         selected_modal_option = 0
 
         options = ["TAK", "NIE"]
 
         while True:
-            self.window.addstr((curses.LINES // 2) - 1, 1, "")
+            self.window.addstr(self.mid_line - 1, 1, "")
             # Centrowanie menu: do poprawy
             options_length = 0
 
