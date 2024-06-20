@@ -208,7 +208,7 @@ def main(main_window: "curses.window"):
                                 task = Task(project_task_name)
 
                                 current_project.add_task(task)
-                                ui_state.project_task_position = len(current_project.task_names) - 1
+                                current_item_position = len(current_project.task_names) - 1
                             case ProjectTaskActions.DELETE if current_project_task is not None and confirmation_window.display():
                                 current_project.delete_task(ui_state.project_task_position)
 
