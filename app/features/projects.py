@@ -13,7 +13,7 @@ class Projects:
         self.projects.pop(project_index)
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, projects_dict):
         return cls()
 
     def serialize(self):

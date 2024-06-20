@@ -1,16 +1,37 @@
 {
-    "selected_positions": {
-        "selected_menu_option": 5,
-        "selected_project_position": 0,
-        "selected_project_task_position": 0,
-        "view_type": "project"
+    "ui_state": {
+        "menu_position": 4,
+        "project_position": 1,
+        "project_task_position": 0,
+        "view_type": "project",
+        "mode": "normal"
     },
     "projects": [
         {
-            "name": "NOWY PROJEKT !!",
+            "name": "a",
             "tasks": [
                 {
-                    "name": "zadanie nr 1"
+                    "name": "c"
+                },
+                {
+                    "name": "a"
+                },
+                {
+                    "name": "b"
+                }
+            ]
+        },
+        {
+            "name": "hello world",
+            "tasks": [
+                {
+                    "name": "C"
+                },
+                {
+                    "name": "b"
+                },
+                {
+                    "name": "A"
                 }
             ]
         }
