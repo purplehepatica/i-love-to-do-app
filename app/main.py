@@ -102,6 +102,10 @@ def main(main_window: "curses.window"):
             curses.start_color()
             curses.init_pair(1, 8, curses.COLOR_BLACK)
             bottom_menu_window.sub_window.bkgd(" ", curses.color_pair(1))
+        elif ui_state.mode == "normal":
+            curses.start_color()
+            curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+            bottom_menu_window.sub_window.bkgd(" ", curses.color_pair(1))
 
         top_items_window.display(
             items_header,
@@ -165,7 +169,7 @@ def main(main_window: "curses.window"):
                     # select_bottom item
                     current_item_position += 1
                 case curses.KEY_ENTER | 10 | 13:  # enter key numbers in various systems
-                    # HANDLE VIEW_TYPE ENTER PRESS
+                    # HANDLE ENTER PRESS BASED ON VIEW_TYPE
                     if ui_state.view_type == "project":
                         match ProjectActions(ui_state.menu_position):
                             case ProjectActions.OPEN if current_project is not None:
@@ -180,13 +184,13 @@ def main(main_window: "curses.window"):
                                 project = Project(project_name)
 
                                 projects.add(project)
-                                ui_state.project_position -= len(projects.projects) - 1
+                                current_item_position = len(projects.projects) - 1
                             case ProjectActions.DELETE if current_project is not None and confirmation_window.display():
                                 projects.delete(ui_state.project_position)
 
                                 if current_item_position > 0:
                                     current_item_position -= 1
-                            case ProjectActions.CHANGE_NAME if current_project is not None and confirmation_window.display():
+                            case ProjectActions.CHANGE_NAME if current_project is not None:
                                 change_item_name()
                             case ProjectActions.CHANGE_POSITION if current_project is not None:
                                 ui_state.mode = "editing"
