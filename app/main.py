@@ -45,7 +45,7 @@ def main(main_window: "curses.window"):
         "Go back"
     ]
 
-    # WINDOWS CREATION start
+    # Windows creation START
     full_width = curses.COLS
     smaller_window_height = 5
 
@@ -67,7 +67,7 @@ def main(main_window: "curses.window"):
 
     input_window = InputDialog(main_window)
     confirmation_window = ConfirmationDialog(main_window)
-    # WINDOWS CREATION end
+    # Windows creation END
 
     while True:
         curses.curs_set(0)

@@ -4,7 +4,7 @@ class Projects:
 
     @property
     def names(self):
-        return [project.name for project in self.projects]
+        return [f"{project.name} ({len(project.tasks)})" for project in self.projects]
 
     def add(self, project):
         self.projects.append(project)
