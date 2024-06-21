@@ -45,7 +45,7 @@ def main(main_window: "curses.window"):
         "Go back"
     ]
 
-    # WINDOWS CREATION
+    # WINDOWS CREATION start
     full_width = curses.COLS
     smaller_window_height = 5
 
@@ -67,11 +67,13 @@ def main(main_window: "curses.window"):
 
     input_window = InputDialog(main_window)
     confirmation_window = ConfirmationDialog(main_window)
+    # WINDOWS CREATION end
 
     while True:
         curses.curs_set(0)
         main_window.keypad(True)
         curses.noecho()
+        main_window.clear()
 
         current_project: Project = projects.get(ui_state.project_position) \
             if len(projects.projects) > 0 \
@@ -82,16 +84,16 @@ def main(main_window: "curses.window"):
             else None
 
         current_item = current_project if ui_state.view_type == "project" else current_project_task
-        current_item_position = ui_state.project_position if ui_state.view_type == "project" \
+        ui_state.current_item_position = ui_state.project_position if ui_state.view_type == "project" \
             else ui_state.project_task_position
-
-        ui_state.current_item_position = current_item_position
 
         items = projects.projects if ui_state.view_type == "project" else current_project.tasks
         items_names = projects.names if ui_state.view_type == "project" else current_project.task_names
 
-        upper_item = items[current_item_position - 1] if current_item_position > 0 else None
-        lower_item = items[current_item_position + 1] if current_item_position < len(items) - 1 else None
+        upper_item = items[ui_state.current_item_position - 1] if len(items) > 0 \
+            else None
+        lower_item = items[ui_state.current_item_position + 1] if ui_state.current_item_position < len(items) - 1 \
+            else None
 
         menu_options = project_menu_options \
             if ui_state.view_type == "project" \
@@ -116,7 +118,7 @@ def main(main_window: "curses.window"):
             items_header,
             "column",
             items_names,
-            current_item_position
+            ui_state.current_item_position
         )
 
         bottom_menu_window.display(
@@ -165,13 +167,13 @@ def main(main_window: "curses.window"):
             match pressed_key:
                 case curses.KEY_UP if upper_item is not None:
                     # move_item_up
-                    items[current_item_position] = upper_item
-                    items[current_item_position - 1] = current_item
+                    items[ui_state.current_item_position] = upper_item
+                    items[ui_state.current_item_position - 1] = current_item
                     ui_state.current_item_position -= 1
                 case curses.KEY_DOWN if lower_item is not None:
                     # move_item_down
-                    items[current_item_position] = lower_item
-                    items[current_item_position + 1] = current_item
+                    items[ui_state.current_item_position] = lower_item
+                    items[ui_state.current_item_position + 1] = current_item
                     ui_state.current_item_position += 1
                 case curses.KEY_ENTER | 10 | 13:
                     # change mode to normal
@@ -185,10 +187,10 @@ def main(main_window: "curses.window"):
                 case curses.KEY_RIGHT if ui_state.menu_position < len(menu_options) - 1:
                     # next_menu_option
                     ui_state.menu_position += 1
-                case curses.KEY_UP if current_item_position > 0:
+                case curses.KEY_UP if ui_state.current_item_position > 0:
                     # select_upper_item
                     ui_state.current_item_position -= 1
-                case curses.KEY_DOWN if current_item_position < len(items) - 1:
+                case curses.KEY_DOWN if ui_state.current_item_position < len(items) - 1:
                     # select_bottom item
                     ui_state.current_item_position += 1
                 case curses.KEY_ENTER | 10 | 13:  # enter key numbers in various systems
@@ -219,7 +221,9 @@ def main(main_window: "curses.window"):
                                 ui_state.mode = "editing"
                             case ProjectTaskActions.CLOSE:
                                 ui_state.view_type = "project"
-                                ui_state.project_task_position = None
+                                ui_state.menu_position = 0
+                                ui_state.current_item_position = ui_state.project_position
+                                continue
 
         if ui_state.view_type == "project":
             ui_state.project_position = ui_state.current_item_position
@@ -228,8 +232,6 @@ def main(main_window: "curses.window"):
 
         new_data = projects.serialize()
         Data.save(data_path, new_data)
-
-        main_window.clear()
 
 
 if __name__ == "__main__":
