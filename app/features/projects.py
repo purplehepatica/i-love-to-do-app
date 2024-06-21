@@ -12,6 +12,9 @@ class Projects:
     def delete(self, project_index):
         self.projects.pop(project_index)
 
+    def get(self, project_index):
+        return self.projects[project_index]
+
     @classmethod
     def from_dict(cls, projects_dict):
         return cls()

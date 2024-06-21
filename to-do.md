@@ -4,6 +4,7 @@
 
 # Rzeczy do zrobienia
 
+- nadpisywanie menu_option, selected_task i project po uruchomieniu aplikacji na 0 -> w sumie w ogóle nie potrzebuje zapisywać state żadnego z elementów "na stałe" - po otworzeniu aplikacji ma być ustawione wszystko na bazowe ustawienia
 - zapobiec sytuacji, gdy pliku nie ma lub jest wypełniony innymi danymi
 - operacje na state, np. increase, decrease
 - może wrzucić tasks osobno i by każde zadanie miało przypisane odgórnie konkretne ID projektu 

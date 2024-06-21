@@ -12,31 +12,38 @@ from features.projects import Projects
 
 
 def main(main_window: "curses.window"):
+    COLOR_GREY = 8
+
+    curses.start_color()
+    curses.init_pair(1, COLOR_GREY, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+
     data_path = "data/data.json"
     data = Data.load(data_path)
 
-    ui_state = UIState.from_dict(data["ui_state"])
+    ui_state = UIState()
+
     projects = Projects([
         Project(project["name"], [Task(task["name"]) for task in project["tasks"]]) for project in data["projects"]
     ])
 
     # CONSTANTS
-    project_menu_options = {
-        0: "Open",
-        1: "Add",
-        2: "Delete",
-        3: "Change name",
-        4: "Change position",
-        5: "Exit"
-    }
+    project_menu_options = [
+        "Open",
+        "Add",
+        "Delete",
+        "Change name",
+        "Change position",
+        "Exit"
+    ]
 
-    task_menu_options = {
-        0: "Add",
-        1: "Delete",
-        2: "Change name",
-        3: "Change position",
-        4: "Back"
-    }
+    task_menu_options = [
+        "Add",
+        "Delete",
+        "Change name",
+        "Change position",
+        "Go back"
+    ]
 
     # WINDOWS CREATION
     full_width = curses.COLS
@@ -66,17 +73,29 @@ def main(main_window: "curses.window"):
         main_window.keypad(True)
         curses.noecho()
 
-        current_project: Project = projects.projects[ui_state.project_position] \
+        current_project: Project = projects.get(ui_state.project_position) \
             if len(projects.projects) > 0 \
             else None
 
-        current_project_task: Task = current_project.tasks[ui_state.project_task_position] \
+        current_project_task: Task = current_project.get_task(ui_state.project_task_position) \
             if ui_state.view_type == "task" and len(current_project.tasks) > 0 \
             else None
 
-        menu_options = list(project_menu_options.values()) \
+        current_item = current_project if ui_state.view_type == "project" else current_project_task
+        current_item_position = ui_state.project_position if ui_state.view_type == "project" \
+            else ui_state.project_task_position
+
+        ui_state.current_item_position = current_item_position
+
+        items = projects.projects if ui_state.view_type == "project" else current_project.tasks
+        items_names = projects.names if ui_state.view_type == "project" else current_project.task_names
+
+        upper_item = items[current_item_position - 1] if current_item_position > 0 else None
+        lower_item = items[current_item_position + 1] if current_item_position < len(items) - 1 else None
+
+        menu_options = project_menu_options \
             if ui_state.view_type == "project" \
-            else list(task_menu_options.values())
+            else task_menu_options
 
         items_header = "Projects list" \
             if ui_state.view_type == "project" \
@@ -90,22 +109,8 @@ def main(main_window: "curses.window"):
         change_item_name_header = "Change project name" if ui_state.view_type == "project" \
             else "Change project task name"
 
-        items = projects.projects if ui_state.view_type == "project" else current_project.tasks
-        items_names = projects.names if ui_state.view_type == "project" else current_project.task_names
-
-        current_item = current_project if ui_state.view_type == "project" else current_project_task
-
-        current_item_position = ui_state.project_position if ui_state.view_type == "project" \
-            else ui_state.project_task_position
-
-        if ui_state.mode == "editing":
-            curses.start_color()
-            curses.init_pair(1, 8, curses.COLOR_BLACK)
-            bottom_menu_window.sub_window.bkgd(" ", curses.color_pair(1))
-        elif ui_state.mode == "normal":
-            curses.start_color()
-            curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
-            bottom_menu_window.sub_window.bkgd(" ", curses.color_pair(1))
+        curses_color_pair = 1 if ui_state.mode == "editing" else 2
+        bottom_menu_window.sub_window.bkgd(" ", curses.color_pair(curses_color_pair))
 
         top_items_window.display(
             items_header,
@@ -122,6 +127,26 @@ def main(main_window: "curses.window"):
         )
 
         # HANDLE KEY FUNCTIONS START
+        def add_item():
+            input_window.display(add_item_header)
+            item_name = input_window.get()
+
+            if item_name == "":
+                return
+
+            new_item = Project(item_name) if ui_state.view_type == "project" else Task(item_name)
+            projects.add(new_item) if ui_state.view_type == "project" else current_project.add_task(new_item)
+
+            ui_state.current_item_position = len(items) - 1
+
+        @confirmation(confirmation_window)
+        def delete_item():
+            projects.delete(ui_state.project_position) if ui_state.view_type == "project" \
+                else current_project.delete_task(ui_state.project_task_position)
+
+            if ui_state.current_item_position > 0:
+                ui_state.current_item_position -= 1
+
         def change_item_name():
             input_window.display(change_item_name_header)
             new_item_name = input_window.get()
@@ -133,9 +158,6 @@ def main(main_window: "curses.window"):
         # HANDLE KEY FUNCTIONS END
 
         # KEYS LOGIC
-        upper_item = items[current_item_position - 1] if current_item_position > 0 else None
-        lower_item = items[current_item_position + 1] if current_item_position < len(items) - 1 else None
-
         pressed_key = listen_for_key_input(main_window)
 
         # HANDLE APP MODES
@@ -145,12 +167,12 @@ def main(main_window: "curses.window"):
                     # move_item_up
                     items[current_item_position] = upper_item
                     items[current_item_position - 1] = current_item
-                    current_item_position -= 1
+                    ui_state.current_item_position -= 1
                 case curses.KEY_DOWN if lower_item is not None:
                     # move_item_down
                     items[current_item_position] = lower_item
                     items[current_item_position + 1] = current_item
-                    current_item_position += 1
+                    ui_state.current_item_position += 1
                 case curses.KEY_ENTER | 10 | 13:
                     # change mode to normal
                     ui_state.mode = "normal"
@@ -165,10 +187,10 @@ def main(main_window: "curses.window"):
                     ui_state.menu_position += 1
                 case curses.KEY_UP if current_item_position > 0:
                     # select_upper_item
-                    current_item_position -= 1
+                    ui_state.current_item_position -= 1
                 case curses.KEY_DOWN if current_item_position < len(items) - 1:
                     # select_bottom item
-                    current_item_position += 1
+                    ui_state.current_item_position += 1
                 case curses.KEY_ENTER | 10 | 13:  # enter key numbers in various systems
                     # HANDLE ENTER PRESS BASED ON VIEW_TYPE
                     if ui_state.view_type == "project":
@@ -176,21 +198,9 @@ def main(main_window: "curses.window"):
                             case ProjectActions.OPEN if current_project is not None:
                                 ui_state.view_type = "task"
                             case ProjectActions.ADD:
-                                input_window.display(add_item_header)
-                                project_name = input_window.get()
-
-                                if project_name == "":
-                                    return
-
-                                project = Project(project_name)
-
-                                projects.add(project)
-                                current_item_position = len(projects.projects) - 1
-                            case ProjectActions.DELETE if current_project is not None and confirmation_window.display():
-                                projects.delete(ui_state.project_position)
-
-                                if current_item_position > 0:
-                                    current_item_position -= 1
+                                add_item()
+                            case ProjectActions.DELETE if current_project is not None:
+                                delete_item()
                             case ProjectActions.CHANGE_NAME if current_project is not None:
                                 change_item_name()
                             case ProjectActions.CHANGE_POSITION if current_project is not None:
@@ -200,21 +210,9 @@ def main(main_window: "curses.window"):
                     elif ui_state.view_type == "task":
                         match ProjectTaskActions(ui_state.menu_position):
                             case ProjectTaskActions.ADD:
-                                input_window.display(add_item_header)
-                                project_task_name = input_window.get()
-
-                                if project_task_name == "":
-                                    return
-
-                                task = Task(project_task_name)
-
-                                current_project.add_task(task)
-                                current_item_position = len(current_project.task_names) - 1
-                            case ProjectTaskActions.DELETE if current_project_task is not None and confirmation_window.display():
-                                current_project.delete_task(ui_state.project_task_position)
-
-                                if upper_item is not None:
-                                    current_item_position -= 1
+                                add_item()
+                            case ProjectTaskActions.DELETE if current_project_task is not None:
+                                delete_item()
                             case ProjectTaskActions.CHANGE_NAME if current_project_task is not None:
                                 change_item_name()
                             case ProjectTaskActions.CHANGE_POSITION if current_project_task is not None:
@@ -224,11 +222,11 @@ def main(main_window: "curses.window"):
                                 ui_state.project_task_position = None
 
         if ui_state.view_type == "project":
-            ui_state.project_position = current_item_position
+            ui_state.project_position = ui_state.current_item_position
         elif ui_state.view_type == "task":
-            ui_state.project_task_position = current_item_position
+            ui_state.project_task_position = ui_state.current_item_position
 
-        new_data = ui_state.serialize() | projects.serialize()
+        new_data = projects.serialize()
         Data.save(data_path, new_data)
 
         main_window.clear()
