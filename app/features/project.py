@@ -1,34 +1,23 @@
-def input_project_name():
-    return input("Jak nazwiesz swój nowy projekt?: ")
+class Project:
+    def __init__(self, project_name, tasks=[]):
+        self.name = project_name
+        self.tasks = tasks
 
-def input_project_index():
-    return input("Projekt, o jakim ID chcesz usunąć?: ")
+    @property
+    def task_names(self):
+        return [task.name for task in self.tasks]
 
-def get_project_names(data):
-    return [project["name"] for project in data["projects"]]
+    def add_task(self, task):
+        self.tasks.append(task)
 
+    def delete_task(self, task_index):
+        self.tasks.pop(task_index)
 
-def create_project_entry(project_name):
-    return {
-        'name': project_name
-    }
+    def get_task(self, task_index):
+        return self.tasks[task_index]
 
-
-def add_project(data, project_entry):
-    data["projects"].append(project_entry)
-
-
-def delete_project(data, project_index):
-    data["projects"].pop(project_index)
-
-
-def init_project_creation(data):
-    project_name = input_project_name()
-    project_entry = create_project_entry(project_name)
-
-    add_project(data, project_entry)
-
-
-def init_project_removal(data):
-    project_index = int(input_project_index())
-    delete_project(data, project_index)
+    def serialize(self):
+        return {
+            "name": self.name,
+            "tasks": [task.__dict__ for task in self.tasks]
+        }

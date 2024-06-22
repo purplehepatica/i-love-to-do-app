@@ -1,30 +1,26 @@
+# Błędy
+
 # Rzeczy do zrobienia
 
-## Aktualne
-- podział kodu na pomniejsze pliki i oczyszczenie kodu
-- zmiana nazwy projektu
-- zmiana pozycji projektu (?)
+- dodanie obramowania w input i confirmation dialogs, tak by zachować spójność i wygląd okien
+- zapobiec sytuacji, gdy pliku nie ma lub jest wypełniony innymi danymi
+- operacje na state, np. increase, decrease
+- może wrzucić tasks osobno i by każde zadanie miało przypisane odgórnie konkretne ID projektu 
+- poprawić centrowanie tekstu z poziomu input_dialog i confirmation_dialog
+- zaimplementować automatyczne wykrywanie resize dla windows i ich odświeżanie
+- dodać input jako dekorator?
+- filtrowanie po dacie utworzenia?
+- funkcjonalność wykonania zadania, tak by zadanie przechodziło do przekreślonych, w sekcji na dole ekranu
+- w przypadku braku zadania / projektu wygaszenie opcji, których nie można nacisnąć
 
-## Następne
+## Dalsze
 
-## Dalsze:
-
-- style "CSS"
-- odświeżenie ekranu po naciśnięiu przez użytkownika na dany projekt:
-  A. Listenery Python w terminalu?
-  B. Projekty jako link (<a>?)
 - bardzo prosta instalacja aplikacji na komputerze, by była dostępna jako komenda
-- wyjście z aplikacji, jeśli okno terminala jest za małe,
+- wyjście z aplikacji, jeśli okno terminala jest za małe
+- ograniczenie szerokości inputa (ilość znaków, nazwy projektu, np. 20 znaków)
 - ograniczenie liczby projektów do wysokości ekranu (?)
-- wprowadzenie max. liczby słów w inpucie, tak by aplikacja zawsze wyglądała jednolicie
 
-## Wykonane:
-- ~~Dodanie funkcji listującej projekty na ekranie użytkownika~~,
-- ~~Dodanie funkcji odświeżającej ekran po dodaniu nowego projektu (po dodaniu czegokolwiek, tak by na dole zawsze była tylko jedna linijka inputu~~,
-- ~~Dodanie obsługi zapisu projektów do pliku JSON~~
-
-
-## Inspiracje:
+## Inspiracje
 - https://snapcraft.io/taskbook
 - https://github.com/xwmx/nb
 - https://github.com/gammons/ultralist
