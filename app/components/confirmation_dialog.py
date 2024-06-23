@@ -26,6 +26,7 @@ class ConfirmationDialog:
 
         while True:
             self.window.addstr(self.mid_line - 1, 1, "")
+
             # Centrowanie menu: do poprawy
             options_length = 0
 

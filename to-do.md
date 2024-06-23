@@ -2,6 +2,7 @@
 
 # Rzeczy do zrobienia
 
+- stworzenie komponentów bazujących nie na window, a np. na konkretnych elementach: Menu, Navigation, ItemsList (?)
 - dodanie obramowania w input i confirmation dialogs, tak by zachować spójność i wygląd okien
 - zapobiec sytuacji, gdy pliku nie ma lub jest wypełniony innymi danymi
 - operacje na state, np. increase, decrease
